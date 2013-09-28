@@ -410,7 +410,7 @@ compaction_preheat_key_cache: true
 # org.apache.cassandra.locator.PropertyFileSnitch:
 #  - Proximity is determined by rack and data center, which are
 #    explicitly configured in cassandra-topology.properties.
-endpoint_snitch: org.apache.cassandra.locator.SimpleSnitch
+endpoint_snitch: org.apache.cassandra.locator.PropertyFileSnitch
 
 # controls how often to perform the more expensive part of host score
 # calculation

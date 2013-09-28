@@ -285,9 +285,9 @@ public class CassandraEmbeddedStoreManager extends AbstractCassandraStoreManager
             return;
 
         // Keyspace not found; create it
-        String strategyName = "org.apache.cassandra.locator.SimpleStrategy";
+        String strategyName = "org.apache.cassandra.locator.NetworkTopologyStrategy";
         Map<String, String> options = new HashMap<String, String>() {{
-            put("replication_factor", String.valueOf(replicationFactor));
+            put("dc1", String.valueOf(replicationFactor));
         }};
 
         KSMetaData ksm;
@@ -353,7 +353,7 @@ public class CassandraEmbeddedStoreManager extends AbstractCassandraStoreManager
                                        SYSTEM_PROPERTIES_CF,
                                        propertiesKey,
                                        column,
-                                       ConsistencyLevel.QUORUM);
+                                       ConsistencyLevel.LOCAL_QUORUM);
 
         return (value == null) ? null : UTF8Type.instance.getString(value);
     }
@@ -371,7 +371,7 @@ public class CassandraEmbeddedStoreManager extends AbstractCassandraStoreManager
         RowMutation property = new RowMutation(keySpaceName, UTF8Type.instance.fromString(SYSTEM_PROPERTIES_KEY));
         property.add(new QueryPath(new ColumnPath(SYSTEM_PROPERTIES_CF).setColumn(key)), val, System.currentTimeMillis());
 
-        mutate(Arrays.asList(property), ConsistencyLevel.QUORUM);
+        mutate(Arrays.asList(property), ConsistencyLevel.LOCAL_QUORUM);
     }
     
     @Override

@@ -195,7 +195,7 @@ public class CassandraEmbeddedKeyColumnValueStore implements KeyColumnValueStore
                                                                     filter,
                                                                     range,
                                                                     null,
-                                                                    pageSize), ConsistencyLevel.QUORUM);
+                                                                    pageSize), ConsistencyLevel.LOCAL_QUORUM);
         } catch (Exception e) {
             throw new PermanentStorageException(e);
         }

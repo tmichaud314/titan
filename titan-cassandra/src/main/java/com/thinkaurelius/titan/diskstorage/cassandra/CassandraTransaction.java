@@ -74,8 +74,8 @@ public class CassandraTransaction extends AbstractStoreTransaction {
     public CassandraTransaction(ConsistencyLevel level, Consistency readConsistency, Consistency writeConsistency) {
         super(level);
         if (level == ConsistencyLevel.KEY_CONSISTENT) {
-            this.readConsistency = Consistency.QUORUM;
-            this.writeConsistency = Consistency.QUORUM;
+            this.readConsistency = Consistency.LOCAL_QUORUM;
+            this.writeConsistency = Consistency.LOCAL_QUORUM;
         } else {
             Preconditions.checkNotNull(readConsistency);
             Preconditions.checkNotNull(writeConsistency);

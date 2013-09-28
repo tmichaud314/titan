@@ -108,6 +108,15 @@ public class AstyanaxStoreManager extends AbstractCassandraStoreManager {
     public static final String CONNECTION_POOL_TYPE_KEY = "connection-pool-type";
 
     /**
+     * Used with RING_DESCRIBE node-discovery to limit a connection pool's
+     * nodes to a local data-center.
+     * <p/>
+     * Value = {@value}
+     */
+    public static final String LOCAL_DATA_CENTER_DEFAULT = null;
+    public static final String LOCAL_DATA_CENTER_KEY = "local-data-center";
+
+    /**
      * This must be the fully-qualified classname (i.e. the complete package
      * name, a dot, and then the class name) of an implementation of Astyanax's
      * RetryPolicy interface. This string may be followed by a sequence of
@@ -326,7 +335,11 @@ public class AstyanaxStoreManager extends AbstractCassandraStoreManager {
                 config.getString(
                         NODE_DISCOVERY_TYPE_KEY,
                         NODE_DISCOVERY_TYPE_DEFAULT));
-        
+        final String localDataCenter =
+                config.getString(
+                        LOCAL_DATA_CENTER_KEY,
+                        LOCAL_DATA_CENTER_DEFAULT);
+
         final int maxConnections =
                 config.getInt(
                         MAX_CONNECTIONS_KEY,
@@ -345,6 +358,7 @@ public class AstyanaxStoreManager extends AbstractCassandraStoreManager {
         			.setRetryBackoffStrategy(new FixedRetryBackoffStrategy(1000, 5000)) // TODO configuration
         			.setSocketTimeout(connectionTimeout)
         			.setConnectTimeout(connectionTimeout)
+        			.setLocalDatacenter(localDataCenter)
         			.setSeeds(StringUtils.join(hostnames,","));
         
         AstyanaxConfigurationImpl aconf =
@@ -385,12 +399,12 @@ public class AstyanaxStoreManager extends AbstractCassandraStoreManager {
         log.debug("Creating keyspace {}...", keySpaceName);
         try {
             Map<String, String> stratops = new HashMap<String, String>() {{
-                put("replication_factor", String.valueOf(replicationFactor));
+                put("dc1", String.valueOf(replicationFactor));
             }};
 
             ksDef = cl.makeKeyspaceDefinition()
                     .setName(keySpaceName)
-                    .setStrategyClass("org.apache.cassandra.locator.SimpleStrategy")
+                    .setStrategyClass("org.apache.cassandra.locator.NetworkTopologyStrategy")
                     .setStrategyOptions(stratops);
             cl.addKeyspace(ksDef);
 
@@ -455,7 +469,7 @@ public class AstyanaxStoreManager extends AbstractCassandraStoreManager {
 
             OperationResult<Column<String>> result =
                     keyspaceContext.getClient().prepareQuery(PROPERTIES_CF)
-                                               .setConsistencyLevel(ConsistencyLevel.CL_QUORUM)
+                                               .setConsistencyLevel(ConsistencyLevel.CL_LOCAL_QUORUM)
                                                .withRetryPolicy(retryPolicy.duplicate())
                                                .getKey(SYSTEM_PROPERTIES_KEY).getColumn(key)
                                                .execute();
@@ -476,7 +490,7 @@ public class AstyanaxStoreManager extends AbstractCassandraStoreManager {
             Keyspace ks = keyspaceContext.getClient();
 
             OperationResult<Void> result = ks.prepareColumnMutation(PROPERTIES_CF, SYSTEM_PROPERTIES_KEY, key)
-                                                    .setConsistencyLevel(ConsistencyLevel.CL_QUORUM)
+                                                    .setConsistencyLevel(ConsistencyLevel.CL_LOCAL_QUORUM)
                                                     .putValue(value, null)
                                                     .execute();
 

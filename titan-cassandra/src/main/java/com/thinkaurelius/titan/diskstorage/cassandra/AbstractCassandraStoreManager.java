@@ -36,7 +36,7 @@ public abstract class AbstractCassandraStoreManager extends DistributedStoreMana
 
     //################### CASSANDRA SPECIFIC CONFIGURATION OPTIONS ######################
     public static final String READ_CONSISTENCY_LEVEL_KEY = "read-consistency-level";
-    public static final String READ_CONSISTENCY_LEVEL_DEFAULT = "QUORUM";
+    public static final String READ_CONSISTENCY_LEVEL_DEFAULT = "LOCAL_QUORUM";
 
     public static final String WRITE_CONSISTENCY_LEVEL_KEY = "write-consistency-level";
 
@@ -62,7 +62,7 @@ public abstract class AbstractCassandraStoreManager extends DistributedStoreMana
      * if only one node has ever been a member of the
      * cluster in question.
      */
-    public static final String WRITE_CONSISTENCY_LEVEL_DEFAULT = "QUORUM";
+    public static final String WRITE_CONSISTENCY_LEVEL_DEFAULT = "LOCAL_QUORUM";
     /**
      * Default name for the Cassandra keyspace
      * <p/>

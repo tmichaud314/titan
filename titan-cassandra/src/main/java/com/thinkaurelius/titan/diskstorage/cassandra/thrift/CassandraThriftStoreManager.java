@@ -242,9 +242,9 @@ public class CassandraThriftStoreManager extends AbstractCassandraStoreManager {
 
                 KsDef ksdef = new KsDef().setName(keyspaceName)
                         .setCf_defs(new LinkedList<CfDef>()) // cannot be null but can be empty
-                        .setStrategy_class("org.apache.cassandra.locator.SimpleStrategy")
+                        .setStrategy_class("org.apache.cassandra.locator.NetworkTopologyStrategy")
                         .setStrategy_options(new HashMap<String, String>() {{
-                            put("replication_factor", String.valueOf(replicationFactor));
+                            put("dc1", String.valueOf(replicationFactor));
                         }});
 
                 String schemaVer = client.system_add_keyspace(ksdef);
@@ -360,7 +360,7 @@ public class CassandraThriftStoreManager extends AbstractCassandraStoreManager {
 
             ColumnOrSuperColumn column = client.get(UTF8Type.instance.fromString(SYSTEM_PROPERTIES_KEY),
                                                    new ColumnPath(SYSTEM_PROPERTIES_CF).setColumn(UTF8Type.instance.fromString(key)),
-                                                   ConsistencyLevel.QUORUM);
+                                                   ConsistencyLevel.LOCAL_QUORUM);
 
             if (column == null || !column.isSetColumn())
                     return null;
@@ -397,7 +397,7 @@ public class CassandraThriftStoreManager extends AbstractCassandraStoreManager {
             client.insert(UTF8Type.instance.fromString(SYSTEM_PROPERTIES_KEY),
                           new ColumnParent(SYSTEM_PROPERTIES_CF),
                           new Column(key).setValue(val).setTimestamp(System.currentTimeMillis()),
-                          ConsistencyLevel.QUORUM);
+                          ConsistencyLevel.LOCAL_QUORUM);
         } catch (Exception e) {
             throw new PermanentStorageException(e);
         } finally {

@@ -304,7 +304,7 @@ public class CassandraThriftKeyColumnValueStore implements KeyColumnValueStore {
                                                                                          .setFinish(ArrayUtils.EMPTY_BYTE_ARRAY)
                                                                                          .setCount(5)),
                                                             keyRange,
-                                                            ConsistencyLevel.QUORUM).iterator(), new KeyIterationPredicate());
+                                                            ConsistencyLevel.LOCAL_QUORUM).iterator(), new KeyIterationPredicate());
         } catch (Exception e) {
             throw convertException(e);
         }

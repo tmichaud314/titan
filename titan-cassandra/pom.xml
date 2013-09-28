@@ -147,6 +147,9 @@
                         <exclude>**/*ConcurrentTest.java</exclude>
                     </excludes>
                     <forkMode>always</forkMode>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>target/cassandra-tmp/conf/127.0.0.1</additionalClasspathElement>
+                    </additionalClasspathElements>
                 </configuration>
             </plugin>
             <plugin>
